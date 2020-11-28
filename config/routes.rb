@@ -1,23 +1,19 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   root 'welcome#index'
 
-  # merchants
   resources :merchants do
-    resources :items, only: [:index, :new, :create]
+     resources :items, only: [:index, :new, :create]
   end
 
-  # items
   resources :items, except: [:new, :create] do
     resources :reviews, only: [:new, :create]
   end
 
-  # reviews
-  resources :reviews, only: [:edit, :update, :destroy]
+  get '/reviews/:id/edit', to: 'reviews#edit'
+  patch '/reviews/:id', to: 'reviews#update'
+  delete '/reviews/:id', to: 'reviews#destroy'
 
-  # orders
   resources :orders, only: [:new, :create, :show]
-
   # users
   get '/register', to: "users#new"
   post '/register', to: "users#create"
@@ -27,18 +23,13 @@ Rails.application.routes.draw do
   get '/profile/orders', to: 'users_orders#index'
   get '/profile/orders/:id', to: 'orders#show'
   patch '/profile/orders/:id', to: 'orders#update'
-
-
   # password
-  # resources :password, only: [:edit, :update]
   get '/password/edit', to: 'password#edit'
   patch '/password', to: 'password#update'
-
   # sessions
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
   delete '/', to: 'sessions#destroy'
-
   # cart
   post "/cart/:item_id", to: "cart#add_item"
   patch "/cart/:item_id/increment", to: "cart#increment"
@@ -47,7 +38,6 @@ Rails.application.routes.draw do
   delete "/cart", to: "cart#empty"
   delete "/cart/:item_id", to: "cart#remove_item"
 
-# admin
   namespace :admin do
     resources :merchants, only: [:index, :show, :update]
     get '/', to: 'dashboard#index'
@@ -56,7 +46,6 @@ Rails.application.routes.draw do
     patch '/users/:id/orders/:order_id', to:'users_dashboard#update'
   end
 
-# merchant
   namespace :merchant do
     get '/', to: 'dashboard#show'
     resources :items
@@ -66,6 +55,4 @@ Rails.application.routes.draw do
     patch '/discounts/:id/edit', to: 'discounts#edit'
     delete '/discounts/:id/delete', to: 'discounts#destroy'
   end
-
-
 end
